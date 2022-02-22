@@ -1,0 +1,99 @@
+{
+	"summary": {
+		"total_resources": 16,
+		"total_changed": 1,
+		"total_unmanaged": 8,
+		"total_missing": 3,
+		"total_managed": 4
+	},
+	"managed": [
+		{
+			"id": "ami-000000000000",
+			"type": "aws_ami"
+		},
+		{
+			"id": "ami-111111111111",
+			"type": "aws_ami"
+		},
+		{
+			"id": "eipassoc-0000000005",
+			"type": "aws_eip_association"
+		},
+		{
+			"id": "eipassoc-11111111111",
+			"type": "aws_eip_association"
+		}
+	],
+	"unmanaged": [
+		{
+			"id": "AWSReservedSSO_AdministratorAccess_92fcdebae58c242f-arn:aws:iam::aws:policy/AdministratorAccess",
+			"type": "aws_iam_policy_attachment"
+		},
+		{
+			"id": "AWSServiceRoleForSSO-arn:aws:iam::aws:policy/aws-service-role/AWSSSOServiceRolePolicy",
+			"type": "aws_iam_policy_attachment"
+		},
+		{
+			"id": "OrganizationAccountAccessRole-arn:aws:iam::aws:policy/AdministratorAccess",
+			"type": "aws_iam_policy_attachment"
+		},
+		{
+			"id": "AWSReservedSSO_AdministratorAccess_92fcdebae58c242f",
+			"type": "aws_iam_role"
+		},
+		{
+			"id": "OrganizationAccountAccessRole",
+			"type": "aws_iam_role"
+		},
+		{
+			"id": "vol-00000000000",
+			"type": "aws_ebs_volume"
+		},
+		{
+			"id": "vol-111111111111",
+			"type": "aws_ebs_volume"
+		},
+		{
+			"id": "vol-222222222222",
+			"type": "aws_ebs_volume"
+		}
+	],
+	"missing": [
+      {
+        "id": "driftctl-bucket-test-2",
+        "type": "aws_s3_bucket"
+      },
+      {
+        "id": "driftctl-bucket-test-3",
+        "type": "aws_s3_bucket"
+      },
+      {
+        "id": "driftctl-bucket-test-4",
+        "type": "aws_s3_bucket"
+      }
+	],
+	"differences": [
+      {
+      "res": {
+        "id": "driftctl-bucket-test-1",
+        "type": "aws_s3_bucket"
+      },
+      "changelog": [
+        {
+          "type": "update",
+          "path": [
+            "Versioning",
+            "0",
+            "Enabled"
+          ],
+          "from": false,
+          "to": true
+        }
+      ]
+    }
+    ],
+	"coverage": 76,
+	"alerts": null,
+	"provider_name": "aws",
+	"provider_version": "3.19.0"
+}
