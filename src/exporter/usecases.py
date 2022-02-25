@@ -12,10 +12,10 @@ def scan_and_save_drift_on_s3_usecase(drift_repository,
     logger.info("Starting a Drift Scan.")
     drift_result = drift_repository.scan()
 
-    logger.info(f"Drift Scan complete successfully. Send the result for S3 Repository.")
+    logger.info(f"Drift Scan complete successfully. Sending the result for S3 Repository.")
     s3_repository.save(output_config=Rfc1808Url.from_url(os.getenv('RESULT_PATH')), content=drift_result)
 
-    logger.info("Drift Scan Report saved. Task Finished")
+    logger.info("Drift Scan Report saved. Task Finished.")
 
 
 def generate_metrics_from_drift_results_usecase(s3_repository, url):
