@@ -1,5 +1,7 @@
 ## Driftctl Exporter
 
+[![codecov](https://codecov.io/gh/gcavalcante8808/driftctl-exporter/branch/main/graph/badge.svg?token=U7XVngTS3G)](https://codecov.io/gh/gcavalcante8808/driftctl-exporter)
+
 This project aims export the driftctl scan result in the prometheus exporter/openmetrics format, making it suitable to monitoring possible drifts on a environment.
 
 This project doesn't have a direct relation with [GitHub - snyk/driftctl: Detect, track and alert on infrastructure drift](https://github.com/snyk/driftctl), but it uses the scan feature and the result created to expose it as basic metrics and some other metrics (like counts by resource type).
