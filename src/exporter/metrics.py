@@ -2,19 +2,27 @@ from prometheus_client import Gauge
 
 
 def get_metrics():
-    total_resources = Gauge('total_resources', 'Drifctl metric: total_resources}.')
-    total_changed = Gauge('total_changed', 'Drifctl metric: total_changed}.')
-    total_unmanaged = Gauge('total_unmanaged', 'Drifctl metric: total_unmanaged}.')
-    total_missing = Gauge('total_missing', 'Drifctl metric: total_missing}.')
-    total_managed = Gauge('total_managed', 'Drifctl metric: total_managed}.')
-    coverage = Gauge('coverage', 'Drifctl metric: coverage}.')
-    managed_items_count_by_type = Gauge('managed_items_count_by_type', 'Resources found in IaC and in sync with remote',
+    total_resources = Gauge('total_resources', 'Number of resources found by driftctl.')
+    total_changed = Gauge('total_changed', 'Number of resources that are declared on Iac but were changed externally.')
+    total_unmanaged = Gauge('total_unmanaged', 'Number of resources present on cloud provider but no declared on Iac.')
+    total_missing = Gauge('total_missing', 'Number of resources declared on Iac but missing from the cloud provider.')
+    total_managed = Gauge('total_managed', 'Number of resources fully managed by Iac.')
+    coverage = Gauge('coverage', 'Relation between `total_managed` and `total_resources`.')
+    managed_items_count_by_type = Gauge('managed_items_count_by_type',
+                                        'Number of resources by type fully managed by Iac. '
+                                        'Eg: number of `aws_s3_bucket` and so on.',
                                         labelnames=['resource'])
-    unmanaged_items_count_by_type = Gauge('unmanaged_items_count_by_type', 'Resources found in remote but not in IaC',
+    unmanaged_items_count_by_type = Gauge('unmanaged_items_count_by_type',
+                                          'Number of resources by type fully managed by Iac. '
+                                          'Eg: number of `aws_iam_user` and so on.',
                                           labelnames=['resource'])
-    missing_items_count_by_type = Gauge('missing_items_count_by_type', 'Resources found in IaC but not on remote',
+    missing_items_count_by_type = Gauge('missing_items_count_by_type',
+                                        'Number of resources by type fully managed by Iac. '
+                                        'Eg: number of `aws_sqs_queue` and so on.',
                                         labelnames=['resource'])
-    changed_items_count_by_type = Gauge('changed_items_count_by_type', 'Changes on managed resources.',
+    changed_items_count_by_type = Gauge('changed_items_count_by_type',
+                                        'Number of resources that are declared on Iac but were changed externally, '
+                                        'by resource type. Eg: number of `aws_dynamodb_table` and so on.',
                                         labelnames=['resource'])
 
     return locals()
