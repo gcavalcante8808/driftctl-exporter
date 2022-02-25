@@ -1,0 +1,40 @@
+version: '2.4'
+
+volumes:
+  minio-data:
+
+services:
+  app:
+    image: driftctl-exporter
+    build: .
+    working_dir: /usr/src
+    tty: true
+    ports:
+      - 8080:8080
+    environment:
+      DCTL_FROM: "tfstate://./exporter/tests/fixtures/terraform.tfstate"
+      RESULT_PATH: "s3://drift-bucket/results.json" # rfc1808 compliant path. It will be parsed using urlparse: https://docs.python.org/3/library/urllib.parse.html.
+      AWS_S3_ENDPOINT_URL: "http://s3:9000" # Minio
+      AWS_S3_ACCESS_KEY_ID: key # Minio
+      AWS_S3_SECRET_ACCESS_KEY: some-secret # Minio
+      AWS_REGION: "us-east-1"
+      AWS_ACCESS_KEY_ID:
+      AWS_SECRET_ACCESS_KEY:
+      AWS_SESSION_TOKEN:
+    command:
+      - sh
+    volumes:
+      - ./src:/usr/src
+
+  s3:
+    image: gcavalcante8808/minio-dev:latest
+    volumes:
+      - minio-data:/data
+    ports:
+      - 9000:9000
+      - 8999:8999
+    environment:
+      MINIO_ROOT_USER: key
+      MINIO_ROOT_PASSWORD: some-secret
+      MINIO_INITIAL_BUCKET: drift-bucket
+      MINIO_INITIAL_BUCKET_PERMISSION: none

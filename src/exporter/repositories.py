@@ -2,8 +2,17 @@ import json
 import os
 
 import boto3
-from exporter.domain import Rfc1808Url
 from plumbum import local
+
+from exporter.domain import Rfc1808Url, DriftOutput
+
+
+class DriftScanCmdException(Exception):
+    ...
+
+
+class DriftScanInvalidResultError(Exception):
+    ...
 
 
 class DriftScanCmdRepository:
@@ -11,7 +20,23 @@ class DriftScanCmdRepository:
         self.driftctl = local["driftctl"]
 
     def scan(self):
-        return self.driftctl("scan", "--quiet", retcode=None)
+        scan_result = None
+        try:
+            scan_result = self.driftctl("scan", "-o", "json://stdout", "--quiet", retcode=None)
+
+            result_in_json = json.loads(scan_result)
+
+            DriftOutput.from_json(result_in_json)
+        except json.JSONDecodeError as ctx:
+            raise DriftScanCmdException(
+                f"""The drift scan didn't complete successfully. Command output:
+                python_error: {str(ctx)}
+                cmd_output: {scan_result} 
+                """)
+        except KeyError as ctx:
+            raise DriftScanInvalidResultError(str(ctx))
+
+        return scan_result
 
 
 class S3Repository:
