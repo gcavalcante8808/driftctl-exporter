@@ -22,8 +22,6 @@ class DriftScanCmdRepository:
 
             result_in_json = json.loads(scan_result)
 
-            breakpoint()
-
             DriftOutput.from_json(result_in_json)
         except json.JSONDecodeError as ctx:
             raise DriftScanCmdException(
