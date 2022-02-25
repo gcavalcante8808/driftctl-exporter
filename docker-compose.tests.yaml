@@ -4,4 +4,4 @@ services:
   app:
     command:
       - just
-      - test
+      - coverage
