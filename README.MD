@@ -23,15 +23,15 @@ AWS_REGION=<YOUR REGION>
 
 And execute the command `docker-compose up -d`. After a few seconds, check the status of the containers using the `docker-compose ps` command:
 
-![](/Users/arthas/Library/Application%20Support/marktext/images/2022-02-25-16-18-38-image.png)
+![](docs/2022-02-25-16-18-38-image.png)
 
 With the those two containers started, you can now run the `scan.py` script by calling the command `docker-compose exec app python scan.py`; after a few seconds (or more depending on how how much resources the target aws account have), check for `"msg": "Drift Scan Report saved. Task Finished"` log in the output:
 
-![](/Users/arthas/Library/Application%20Support/marktext/images/2022-02-25-17-03-14-image.png)
+![](docs/2022-02-25-17-03-14-image.png)
 
 Now point your browser to `http://localhost:8080/metrics` to see what metrics has been generated. Eg:
 
-![](/Users/arthas/Library/Application%20Support/marktext/images/2022-02-25-17-05-35-image.png)
+![](docs/2022-02-25-17-05-35-image.png)
 
 Enjoy!
 
