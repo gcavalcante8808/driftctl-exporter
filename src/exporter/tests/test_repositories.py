@@ -1,11 +1,13 @@
 import json
 import os
+from pathlib import Path
+from unittest.mock import Mock
 from uuid import uuid4
 
 import pytest
 
 from exporter.domain import Rfc1808Url
-from exporter.repositories import S3Repository
+from exporter.repositories import S3Repository, DriftScanCmdRepository, DriftScanCmdException
 
 
 @pytest.fixture
@@ -23,6 +25,34 @@ def sample_json_file_url(configure_minio_env_vars):
     S3Repository().save(url, json.dumps(content))
 
     return url, content
+
+
+@pytest.fixture
+def driftctl_output():
+    pwd = Path(__file__).resolve().parent
+    with open(f'{pwd}/fixtures/driftctl_output.json', 'rb') as drift:
+        return drift.read()
+
+
+def test_driftctl_cmd_repository_scan_succeeds_when_returned_output_is_a_valid_scan_result(driftctl_output):
+    returned_value = driftctl_output
+    cmd = DriftScanCmdRepository()
+    cmd.driftctl = Mock()
+    cmd.driftctl.return_value = returned_value
+
+    result = cmd.scan()
+
+    assert returned_value == result
+
+
+def test_driftctl_cmd_repository_scan_fails_when_returned_output_is_not_json_encodable():
+    returned_value = "bash: wtf: command not found"
+    cmd = DriftScanCmdRepository()
+    cmd.driftctl = Mock()
+    cmd.driftctl.return_value = returned_value
+
+    with pytest.raises(DriftScanCmdException) as ctx:
+        cmd.scan()
 
 
 def test_s3_repository_configuration_when_using_default_aws_environment_variables():
