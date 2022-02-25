@@ -11,7 +11,7 @@ class DriftScanCmdRepository:
         self.driftctl = local["driftctl"]
 
     def scan(self):
-        return self.driftctl("scan", "--quiet", retcode=None)
+        return self.driftctl("scan", "-o", "json://stdout", "--quiet", retcode=None)
 
 
 class S3Repository:
