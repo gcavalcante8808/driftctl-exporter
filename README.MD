@@ -1,6 +1,7 @@
 ## Driftctl Exporter
 
 [![codecov](https://codecov.io/gh/gcavalcante8808/driftctl-exporter/branch/main/graph/badge.svg?token=U7XVngTS3G)](https://codecov.io/gh/gcavalcante8808/driftctl-exporter)
+[![Actions Status](https://github.com/gcavalcante8808/driftctl-exporter/workflows/BuildNTest/badge.svg)](https://github.com/gcavalcante8808/driftctl-exporter/actions)
 
 This project aims export the driftctl scan result in the prometheus exporter/openmetrics format, making it suitable to monitoring possible drifts on a environment.
 
