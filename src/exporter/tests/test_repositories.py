@@ -7,7 +7,8 @@ from uuid import uuid4
 import pytest
 
 from exporter.domain import Rfc1808Url
-from exporter.repositories import S3Repository, DriftScanCmdRepository, DriftScanCmdException
+from exporter.repositories import S3Repository, DriftScanCmdRepository, DriftScanCmdException, \
+    DriftScanInvalidResultError
 
 
 @pytest.fixture
@@ -52,6 +53,16 @@ def test_driftctl_cmd_repository_scan_fails_when_returned_output_is_not_json_enc
     cmd.driftctl.return_value = returned_value
 
     with pytest.raises(DriftScanCmdException) as ctx:
+        cmd.scan()
+
+
+def test_driftctl_cmd_repository_scan_fails_when_returned_output_is_json_encodable_but_not_a_scan_result():
+    returned_value = '{"this-is-a-naive": "result"}'
+    cmd = DriftScanCmdRepository()
+    cmd.driftctl = Mock()
+    cmd.driftctl.return_value = returned_value
+
+    with pytest.raises(DriftScanInvalidResultError) as ctx:
         cmd.scan()
 
 

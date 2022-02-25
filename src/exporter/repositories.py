@@ -11,6 +11,10 @@ class DriftScanCmdException(Exception):
     ...
 
 
+class DriftScanInvalidResultError(Exception):
+    ...
+
+
 class DriftScanCmdRepository:
     def __init__(self):
         self.driftctl = local["driftctl"]
@@ -29,6 +33,8 @@ class DriftScanCmdRepository:
                 python_error: {str(ctx)}
                 cmd_output: {scan_result} 
                 """)
+        except KeyError as ctx:
+            raise DriftScanInvalidResultError(str(ctx))
 
         return scan_result
 
