@@ -25,6 +25,9 @@ services:
       - sh
     volumes:
       - ./src:/usr/src
+    depends_on:
+      s3:
+        condition: service_healthy
 
   s3:
     image: gcavalcante8808/minio-dev:latest
@@ -38,3 +41,8 @@ services:
       MINIO_ROOT_PASSWORD: some-secret
       MINIO_INITIAL_BUCKET: drift-bucket
       MINIO_INITIAL_BUCKET_PERMISSION: none
+    healthcheck:
+      test: ["CMD-SHELL","mc ls default/drift-bucket"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
