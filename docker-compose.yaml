@@ -41,8 +41,9 @@ services:
       MINIO_ROOT_PASSWORD: some-secret
       MINIO_INITIAL_BUCKET: drift-bucket
       MINIO_INITIAL_BUCKET_PERMISSION: none
+    init: true
     healthcheck:
-      test: ["CMD-SHELL","mc ls default/drift-bucket"]
-      interval: 10s
-      timeout: 3s
+      test: ["CMD-SHELL","mc ls default/$${MINIO_INITIAL_BUCKET}"]
+      interval: 3s
+      timeout: 1s
       retries: 3
