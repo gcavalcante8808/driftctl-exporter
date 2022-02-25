@@ -1,16 +1,22 @@
-import logging
 import os
+import sys
 
 from exporter.domain import Rfc1808Url, DriftOutput
 from exporter.presenters import present_drift_int_attr_as_prometheus_gauge, \
     present_drift_counter_attr_as_prometheus_gauge
+from exporter.repositories import DriftScanCmdException
 from exporter.utils.json_logger import logger
 
 
 def scan_and_save_drift_on_s3_usecase(drift_repository,
-                                      s3_repository):
+                                      s3_repository,
+                                      ):
     logger.info("Starting a Drift Scan.")
-    drift_result = drift_repository.scan()
+    try:
+        drift_result = drift_repository.scan()
+    except DriftScanCmdException as ctx:
+        logger.fatal(f"Drift Scan didn't ran successfully. Check the output for more details.")
+        raise
 
     logger.info(f"Drift Scan complete successfully. Sending the result for S3 Repository.")
     s3_repository.save(output_config=Rfc1808Url.from_url(os.getenv('RESULT_PATH')), content=drift_result)

@@ -7,7 +7,7 @@ import pytest
 from prometheus_client import REGISTRY
 
 from exporter.domain import Rfc1808Url, DriftOutput
-from exporter.repositories import S3Repository, DriftScanCmdRepository
+from exporter.repositories import S3Repository, DriftScanCmdRepository, DriftScanCmdException
 from exporter.usecases import scan_and_save_drift_on_s3_usecase, generate_metrics_from_drift_results_usecase
 
 
@@ -37,11 +37,24 @@ def s3_repository(driftctl_output):
     return s3_repo
 
 
-def test_can_scan_and_save_a_drift_on_s3(drift_repository, s3_repository, driftctl_output):
+def test_scan_and_save_a_drift_on_s3_when_all_configurations_are_valid(drift_repository, s3_repository,
+                                                                           driftctl_output):
     os.environ['RESULT_PATH'] = 's3://another-bucket-to-hold/another-result-to-keep.json'
     s3_config = Rfc1808Url.from_url('s3://another-bucket-to-hold/another-result-to-keep.json')
 
     scan_and_save_drift_on_s3_usecase(drift_repository, s3_repository)
+
+    assert drift_repository.scan.called
+    assert s3_repository.save.called_with_args(**{'output_config': s3_config, 'content': driftctl_output})
+
+
+def test_scan_and_save_a_drift_on_s3_fails_when_drift_scan_result_is_invalid(drift_repository, s3_repository):
+    drift_repository.scan.side_effect = DriftScanCmdException()
+    os.environ['RESULT_PATH'] = 's3://another-bucket-to-hold/another-result-to-keep.json'
+    s3_config = Rfc1808Url.from_url('s3://another-bucket-to-hold/another-result-to-keep.json')
+
+    with pytest.raises(DriftScanCmdException) as ctx:
+        scan_and_save_drift_on_s3_usecase(drift_repository, s3_repository)
 
     assert drift_repository.scan.called
     assert s3_repository.save.called_with_args(**{'output_config': s3_config, 'content': driftctl_output})
