@@ -21,3 +21,5 @@ COPY poetry.lock /usr/src/
 
 RUN pip install poetry>=${POETRY_VERSION} && \
     poetry install --no-interaction --no-ansi
+
+CMD ["python", "web.py"]
