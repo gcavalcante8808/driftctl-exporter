@@ -4,9 +4,7 @@ import os
 from exporter.domain import Rfc1808Url, DriftOutput
 from exporter.presenters import present_drift_int_attr_as_prometheus_gauge, \
     present_drift_counter_attr_as_prometheus_gauge
-
-logger = logging.getLogger()
-logger.setLevel(logging.INFO)
+from exporter.utils.json_logger import logger
 
 
 def scan_and_save_drift_on_s3_usecase(drift_repository,
@@ -14,10 +12,10 @@ def scan_and_save_drift_on_s3_usecase(drift_repository,
     logger.info("Starting a Drift Scan.")
     drift_result = drift_repository.scan()
 
-    logger.info(f"Draft Scan complete. Send the result for S3 Repository.")
+    logger.info(f"Drift Scan complete successfully. Send the result for S3 Repository.")
     s3_repository.save(output_config=Rfc1808Url.from_url(os.getenv('RESULT_PATH')), content=drift_result)
 
-    logger.info("Draft Scan Report saved. Task Finished")
+    logger.info("Drift Scan Report saved. Task Finished")
 
 
 def generate_metrics_from_drift_results_usecase(s3_repository, url):
