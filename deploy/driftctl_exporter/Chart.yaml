@@ -1,6 +1,6 @@
 apiVersion: v2
 name: driftctl_exporter
-description: Driftctl-expoter helm chart for kubernetes.
+description: Driftctl-exporter helm chart for kubernetes.
 
 type: application
 
