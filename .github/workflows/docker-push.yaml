@@ -28,4 +28,4 @@ jobs:
       - name: publish-docker-image
         run: |
           just --set image_tag ${GITHUB_SHA} publish-docker-image
-          just --set image_tag latest build-publish-image
+          just --set image_tag latest publish-docker-image
