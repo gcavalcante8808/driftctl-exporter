@@ -13,6 +13,7 @@ jobs:
       DOCKER_BUILDKIT: 1
     steps:
       - uses: actions/checkout@v2
+      - uses: extractions/setup-just@v1
 
       - name: Login to DockerHub
         uses: docker/login-action@v1
@@ -22,5 +23,5 @@ jobs:
 
       - name: build-docker-image
         run: |
-          COMMIT_HASH=${{ env.GITHUB_SHA }} docker-compose build app
-          COMMIT_HASH=latest docker-compose build app
+          just --set image_tag ${{ env.GITHUB_SHA }} build-docker-image
+          just --set image_tag latest build-docker-image
