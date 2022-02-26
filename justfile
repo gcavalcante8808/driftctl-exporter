@@ -11,6 +11,9 @@ build-docker-image:
 publish-docker-image:
   COMMIT_HASH={{image_tag}} docker-compose push app
 
+python-tests:
+  docker-compose -f docker-compose.yaml -f docker-compose.tests.yaml up --exit-code-from app
+
 helm-chart-tests: helm
   helm unittest -3 deploy/driftctl_exporter
 
