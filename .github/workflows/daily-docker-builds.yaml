@@ -5,14 +5,12 @@ on:
 
 jobs:
   unittests:
-    runs-on: ubuntu-latest
     env:
       COMPOSE_DOCKER_CLI_BUILD: 1
       DOCKER_BUILDKIT: 1
     uses: ./.github/workflows/unittests.yaml
 
   trivy-scan:
-    runs-on: ubuntu-latest
     env:
       COMPOSE_DOCKER_CLI_BUILD: 1
       DOCKER_BUILDKIT: 1
