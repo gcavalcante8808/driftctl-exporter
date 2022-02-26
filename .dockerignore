@@ -157,7 +157,5 @@ report.sarif
 deploy/
 docs/
 justfile
-report.sarif
 README.MD
-docker-compose.yaml
 docker-compose.tests.yaml
