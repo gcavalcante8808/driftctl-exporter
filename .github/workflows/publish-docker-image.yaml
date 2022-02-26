@@ -11,7 +11,6 @@ jobs:
     env:
       COMPOSE_DOCKER_CLI_BUILD: 1
       DOCKER_BUILDKIT: 1
-      COMMIT_HASH: ${{ env.GITHUB_SHA }}
     steps:
       - uses: actions/checkout@v2
 
@@ -21,8 +20,7 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: build-image-with-hash
-        run: docker-compose build app
-
-      - name: build-image-as-latest
-        run: COMMIT_HASH=latest docker-compose build
+      - name: build-docker-image
+        run: |
+          COMMIT_HASH=${{ env.GITHUB_SHA }} docker-compose build app
+          COMMIT_HASH=latest docker-compose build app
