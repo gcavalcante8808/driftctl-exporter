@@ -153,3 +153,4 @@ cython_debug/
 .idea/
 docker-compose.yaml
 .gitignore
+report.sarif
