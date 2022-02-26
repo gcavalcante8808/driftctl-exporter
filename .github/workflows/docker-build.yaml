@@ -6,7 +6,7 @@ on:
   pull_request:
 
 jobs:
-  test:
+  build-n-scan:
     runs-on: ubuntu-latest
     env:
       COMPOSE_DOCKER_CLI_BUILD: 1
@@ -26,7 +26,14 @@ jobs:
           just --set image_tag ${GITHUB_SHA} build-docker-image
           just --set image_tag latest build-docker-image
 
-      - name: push-docker-images
-        run: |
-          just --set image_tag ${GITHUB_SHA} push-docker-image
-          just --set image_tag latest push-docker-image
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: 'docker.io/gcavalcante8808/driftctl_exporter:${{ github.sha }}'
+          format: 'sarif'
+          output: 'trivy-results.sarif'
+
+      - name: Upload Trivy scan results to GitHub Security tab
+        uses: github/codeql-action/upload-sarif@v1
+        with:
+          sarif_file: 'trivy-results.sarif'
