@@ -25,3 +25,8 @@ jobs:
         run: |
           just --set image_tag ${GITHUB_SHA} build-docker-image
           just --set image_tag latest build-docker-image
+
+      - name: push-docker-images
+        run: |
+          just --set image_tag ${GITHUB_SHA} push-docker-image
+          just --set image_tag latest push-docker-image
