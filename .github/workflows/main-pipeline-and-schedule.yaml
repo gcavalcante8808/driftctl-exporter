@@ -1,0 +1,20 @@
+on:
+  schedule:
+    - cron: '00 4 * * *'
+  push:
+    branches:
+      - main
+
+jobs:
+  unittests:
+    uses: ./.github/workflows/unittests.yaml
+
+  trivy-scan:
+    uses: ./.github/workflows/trivy-scan.yaml
+
+  docker-push:
+    needs: [unittests, trivy-scan]
+    uses: ./.github/workflows/docker-push.yaml
+    secrets:
+      DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+      DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
