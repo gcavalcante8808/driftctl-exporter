@@ -10,3 +10,8 @@ jobs:
   trivy-scan:
     uses: ./.github/workflows/trivy-scan.yaml
 
+  docker-push:
+    uses: ./.github/workflows/docker-push.yaml
+    secrets:
+      DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+      DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
