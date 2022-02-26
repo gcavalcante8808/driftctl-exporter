@@ -4,13 +4,17 @@ on:
   pull_request:
 
 jobs:
-  daily-build:
+  unittests:
     runs-on: ubuntu-latest
     env:
       COMPOSE_DOCKER_CLI_BUILD: 1
       DOCKER_BUILDKIT: 1
-    steps:
-      - uses: actions/checkout@v2
-      - uses: ./.github/workflows/unittests.yaml
-      - uses: ./.github/workflows/trivy-scan.yaml
-      - uses: ./.github/workflows/docker-push.yaml
+    uses: ./.github/workflows/unittests.yaml
+
+  trivy-scan:
+    runs-on: ubuntu-latest
+    env:
+      COMPOSE_DOCKER_CLI_BUILD: 1
+      DOCKER_BUILDKIT: 1
+    uses: ./.github/workflows/trivy-scan.yaml
+
