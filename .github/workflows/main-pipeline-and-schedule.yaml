@@ -7,7 +7,7 @@ on:
 
 jobs:
   unittests:
-    uses: ./.github/workflows/unittests.yaml
+    uses: ./.github/workflows/tests.yaml
 
   trivy-scan:
     uses: ./.github/workflows/trivy-scan.yaml
