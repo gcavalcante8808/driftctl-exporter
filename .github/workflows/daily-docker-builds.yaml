@@ -11,6 +11,7 @@ jobs:
     uses: ./.github/workflows/trivy-scan.yaml
 
   docker-push:
+    needs: [unittests, trivy-scan]
     uses: ./.github/workflows/docker-push.yaml
     secrets:
       DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
