@@ -1,9 +1,6 @@
 name: PublishDockerImage
 on:
   workflow_call:
-  push:
-    branches:
-      - main
 
 jobs:
   build-n-push:
