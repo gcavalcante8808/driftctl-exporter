@@ -1,12 +1,13 @@
-name: BuildNTest
+name: build-n-test
 on:
+  workflow_call:
   push:
     branches:
       - main
   pull_request:
 
 jobs:
-  test:
+  unittests:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
