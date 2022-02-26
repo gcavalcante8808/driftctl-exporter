@@ -12,7 +12,7 @@ publish-docker-image:
   COMMIT_HASH={{image_tag}} docker-compose push app
 
 python-tests:
-  docker-compose -f docker-compose.yaml -f docker-compose.tests.yaml up --exit-code-from app
+  docker-compose -f docker-compose.yaml -f docker-compose.tests.yaml up --build --exit-code-from app
 
 helm-chart-tests: helm
   helm plugin install https://github.com/quintush/helm-unittest --version 0.2.6 || exit 0
