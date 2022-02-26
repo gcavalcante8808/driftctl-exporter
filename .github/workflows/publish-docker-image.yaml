@@ -23,5 +23,5 @@ jobs:
 
       - name: build-docker-image
         run: |
-          just --set image_tag ${{ env.GITHUB_SHA }} build-docker-image
+          just --set image_tag ${GITHUB_SHA} build-docker-image
           just --set image_tag latest build-docker-image
