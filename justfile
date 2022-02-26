@@ -15,6 +15,7 @@ python-tests:
   docker-compose -f docker-compose.yaml -f docker-compose.tests.yaml up --exit-code-from app
 
 helm-chart-tests: helm
+  helm plugin install https://github.com/quintush/helm-unittest --version 0.2.6 || exit 0
   helm unittest -3 deploy/driftctl_exporter
 
 scan-docker-image: trivy
@@ -38,4 +39,3 @@ helm:
   sha256sum -c <(echo "34025bcbc9f543803aebf54ba3be8dabfb03407b7cc07497e8314ccd592ec973  /tmp/helm")
   mv /tmp/helm /usr/local/bin/helm
   chmod +x /usr/local/bin/helm
-  helm plugin install https://github.com/quintush/helm-unittest --version 0.2.6
