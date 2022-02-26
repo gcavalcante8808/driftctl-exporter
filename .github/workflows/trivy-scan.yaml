@@ -6,7 +6,7 @@ on:
   pull_request:
 
 jobs:
-  build-n-scan:
+  vulnerability-scan:
     runs-on: ubuntu-latest
     env:
       COMPOSE_DOCKER_CLI_BUILD: 1
