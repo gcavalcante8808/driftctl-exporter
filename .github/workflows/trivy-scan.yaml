@@ -1,4 +1,4 @@
-name: ScanDockerImage
+name: TrivyScan
 on:
   push:
     branches:
