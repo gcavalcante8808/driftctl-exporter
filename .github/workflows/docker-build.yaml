@@ -26,14 +26,12 @@ jobs:
           just --set image_tag ${GITHUB_SHA} build-docker-image
           just --set image_tag latest build-docker-image
 
+      # We can't run trivy action on a local image yet. https://github.com/aquasecurity/trivy-action/issues/68
+      # So we going to install it and use it directly.
       - name: Run Trivy vulnerability scanner
-        uses: aquasecurity/trivy-action@master
-        with:
-          image-ref: 'gcavalcante8808/driftctl_exporter:${{ github.sha }}'
-          format: 'sarif'
-          output: 'trivy-results.sarif'
+        run: just --set image_tag ${GITHUB_SHA} --set trivy_format "sarif" --set trivy_output "report.sarif" scan-docker-image
 
       - name: Upload Trivy scan results to GitHub Security tab
         uses: github/codeql-action/upload-sarif@v1
         with:
-          sarif_file: 'trivy-results.sarif'
+          sarif_file: 'report.sarif'
