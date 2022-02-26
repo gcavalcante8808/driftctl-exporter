@@ -52,7 +52,7 @@
       "type": "object",
       "properties": {
         "strategy": {
-          "$ref": "http://pipelines-assets.empiricus.com.br.s3.amazonaws.com/_definitions.json#/definitions/io.k8s.api.apps.v1.DeploymentStrategy"
+          "$ref": "https://raw.githubusercontent.com/instrumenta/kubernetes-json-schema/master/v1.18.0/_definitions.json#/definitions/io.k8s.api.apps.v1.DeploymentStrategy"
         },
         "name": {"type": "string"}
       }
@@ -79,7 +79,7 @@
       "type": "array",
       "default": [],
       "items": {
-        "$ref": "http://pipelines-assets.empiricus.com.br.s3.amazonaws.com/_definitions.json#/definitions/io.k8s.api.core.v1.EnvVar"
+        "$ref": "https://raw.githubusercontent.com/instrumenta/kubernetes-json-schema/master/v1.18.0/_definitions.json#/definitions/io.k8s.api.core.v1.EnvVar"
       }
     },
     "extraEnvFrom": {
@@ -88,7 +88,7 @@
       "default": [],
       "items": {
         "type": "object",
-        "$ref": "http://pipelines-assets.empiricus.com.br.s3.amazonaws.com/_definitions.json#/definitions/io.k8s.api.core.v1.EnvFromSource"
+        "$ref": "https://raw.githubusercontent.com/instrumenta/kubernetes-json-schema/master/v1.18.0/_definitions.json#/definitions/io.k8s.api.core.v1.EnvFromSource"
       }
     },
     "applicationPort": {
@@ -96,26 +96,26 @@
       "default": 8080
     },
     "securityContext": {
-      "$ref": "http://pipelines-assets.empiricus.com.br.s3.amazonaws.com/_definitions.json#/definitions/io.k8s.api.core.v1.PodSecurityContext",
+      "$ref": "https://raw.githubusercontent.com/instrumenta/kubernetes-json-schema/master/v1.18.0/_definitions.json#/definitions/io.k8s.api.core.v1.PodSecurityContext",
       "description": "SecurityContext holds pod-level security attributes and common container settings. Optional: Defaults to empty.  See type description for default values of each field."
     },
     "podSecurityContext": {
-      "$ref": "http://pipelines-assets.empiricus.com.br.s3.amazonaws.com/_definitions.json#/definitions/io.k8s.api.core.v1.PodSecurityContext",
+      "$ref": "https://raw.githubusercontent.com/instrumenta/kubernetes-json-schema/master/v1.18.0/_definitions.json#/definitions/io.k8s.api.core.v1.PodSecurityContext",
       "description": "SecurityContext holds pod-level security attributes and common container settings. Optional: Defaults to empty.  See type description for default values of each field."
     },
     "livenessProbe": {
-      "$ref": "http://pipelines-assets.empiricus.com.br.s3.amazonaws.com/_definitions.json#/definitions/io.k8s.api.core.v1.Probe",
+      "$ref": "https://raw.githubusercontent.com/instrumenta/kubernetes-json-schema/master/v1.18.0/_definitions.json#/definitions/io.k8s.api.core.v1.Probe",
       "description": "Periodic probe of container liveness. Container will be restarted if the probe fails. Cannot be updated. More info: https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle#container-probes"
     },
     "readinessProbe": {
-      "$ref": "http://pipelines-assets.empiricus.com.br.s3.amazonaws.com/_definitions.json#/definitions/io.k8s.api.core.v1.Probe",
+      "$ref": "https://raw.githubusercontent.com/instrumenta/kubernetes-json-schema/master/v1.18.0/_definitions.json#/definitions/io.k8s.api.core.v1.Probe",
       "description": "Periodic probe of container liveness. Container will be restarted if the probe fails. Cannot be updated. More info: https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle#container-probes"
     },
     "resources": {
       "title": "Scanner pod resource requirements",
       "type": "object",
       "default": {},
-      "$ref": "http://pipelines-assets.empiricus.com.br.s3.amazonaws.com/_definitions.json#/definitions/io.k8s.api.core.v1.ResourceRequirements"
+      "$ref": "https://raw.githubusercontent.com/instrumenta/kubernetes-json-schema/master/v1.18.0/_definitions.json#/definitions/io.k8s.api.core.v1.ResourceRequirements"
     }
   },
   "required": [
