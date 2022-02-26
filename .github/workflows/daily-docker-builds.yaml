@@ -1,0 +1,22 @@
+on:
+  schedule:
+    - cron: '00 4 * * *'
+
+jobs:
+  run-tests:
+    runs-on: ubuntu-latest
+    env:
+      COMPOSE_DOCKER_CLI_BUILD: 1
+      DOCKER_BUILDKIT: 1
+    steps:
+      - uses: ./.github/workflows/unittests.yaml
+
+  check-for-vulnerabilities:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: ./.github/workflows/trivy-scan.yaml
+
+  publish-update-docker-image:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: ./.github/workflows/docker-push.yaml
