@@ -1,4 +1,4 @@
-name: PublishDockerImage
+name: ScanDockerImage
 on:
   push:
     branches:

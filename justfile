@@ -23,4 +23,4 @@ trivy:
   #!/bin/bash
   if [[ -f /usr/local/bin/trivy ]] ; then exit 0; fi
   curl -L https://github.com/aquasecurity/trivy/releases/download/v{{trivy_version}}/trivy_{{trivy_version}}_Linux-64bit.tar.gz -o - | tar -xzvf - -C /usr/local/bin/
-  chmod +x trivy
+  chmod +x /usr/local/bin/trivy
