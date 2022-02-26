@@ -29,7 +29,7 @@ jobs:
       - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@master
         with:
-          image-ref: 'docker.io/gcavalcante8808/driftctl_exporter:${{ github.sha }}'
+          image-ref: 'gcavalcante8808/driftctl_exporter:${{ github.sha }}'
           format: 'sarif'
           output: 'trivy-results.sarif'
 
