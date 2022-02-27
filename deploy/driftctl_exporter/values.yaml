@@ -13,6 +13,9 @@ serviceAccount:
 
 podAnnotations: {}
 
+cronjob:
+  schedule: "00 4 * * *"
+
 service:
   name: ""
   labels: {}
