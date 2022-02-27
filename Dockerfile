@@ -25,8 +25,8 @@ COPY --from=downloader /just /usr/local/bin/just
 COPY pyproject.toml /usr/src/
 COPY poetry.lock /usr/src/
 
-RUN pip install ${POETRY_PARAMETERS} "poetry>=${POETRY_VERSION}" && \
-    poetry install --no-interaction --no-ansi
+RUN pip install "poetry>=${POETRY_VERSION}" && \
+    poetry install ${POETRY_PARAMETERS} --no-interaction --no-ansi
 
 COPY src/ /usr/src/
 CMD ["python", "web.py"]
