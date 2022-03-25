@@ -22,7 +22,8 @@ class DriftScanCmdRepository:
     def scan(self):
         scan_result = None
         try:
-            scan_result = self.driftctl("scan", "-o", "json://stdout", "--quiet", retcode=None)
+            scan_result = self.driftctl("scan", "-o", "json://stdout", "--quiet", "--driftignore",
+                                        "/usr/src/.driftignore", retcode=None)
 
             result_in_json = json.loads(scan_result)
 
