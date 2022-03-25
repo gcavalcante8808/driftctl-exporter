@@ -1,0 +1,128 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "$id": "pod-with-service-ingress-helm-chart",
+  "type": "object",
+  "title": "Validator for this helm-chart",
+  "description": "Provides sane checks of dev teams when they're customizing helm charts.",
+  "properties": {
+    "image": {
+      "type": "object",
+      "properties": {
+        "repository": {
+          "title": "ECR repository for the project",
+          "type": "string"
+        },
+        "tag": {
+          "title": "Application version/commit hash",
+          "type": "string"
+        },
+        "pullPolicy": {
+          "type": "string",
+          "default": "IfNotPresent"
+        }
+      },
+      "required": [
+        "repository",
+        "tag"
+      ]
+    },
+    "imagePullSecrets": {
+      "type": "array",
+      "default": []
+    },
+    "serviceAccount": {
+      "type": "object",
+      "properties": {
+        "create": {
+          "title": "Should we create a SA?",
+          "type": "boolean"
+        },
+        "annotations": {
+          "title": "Application version/commit hash",
+          "type": "object",
+          "default": {}
+        },
+        "name": {
+          "type": "string",
+          "default": "Release Name"
+        }
+      }
+    },
+    "deployment": {
+      "type": "object",
+      "properties": {
+        "strategy": {
+          "$ref": "https://raw.githubusercontent.com/instrumenta/kubernetes-json-schema/master/v1.18.0/_definitions.json#/definitions/io.k8s.api.apps.v1.DeploymentStrategy"
+        },
+        "name": {"type": "string"}
+      }
+    },
+    "service": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "default": "APP_NAME Environment Variable"
+        }
+      }
+    },
+    "environment": {
+      "title": "Reuse existing configMaps or secrets as environment variables",
+      "type": "object",
+      "items": {
+        "type": "object"
+      },
+      "default": {}
+    },
+    "extraEnv": {
+      "title": "Reuse existing configMaps or secrets as environment variables",
+      "type": "array",
+      "default": [],
+      "items": {
+        "$ref": "https://raw.githubusercontent.com/instrumenta/kubernetes-json-schema/master/v1.18.0/_definitions.json#/definitions/io.k8s.api.core.v1.EnvVar"
+      }
+    },
+    "extraEnvFrom": {
+      "title": "Reuse existing configMaps or secrets as environment variables",
+      "type": "array",
+      "default": [],
+      "items": {
+        "type": "object",
+        "$ref": "https://raw.githubusercontent.com/instrumenta/kubernetes-json-schema/master/v1.18.0/_definitions.json#/definitions/io.k8s.api.core.v1.EnvFromSource"
+      }
+    },
+    "applicationPort": {
+      "type": "integer",
+      "default": 8080
+    },
+    "securityContext": {
+      "$ref": "https://raw.githubusercontent.com/instrumenta/kubernetes-json-schema/master/v1.18.0/_definitions.json#/definitions/io.k8s.api.core.v1.PodSecurityContext",
+      "description": "SecurityContext holds pod-level security attributes and common container settings. Optional: Defaults to empty.  See type description for default values of each field."
+    },
+    "podSecurityContext": {
+      "$ref": "https://raw.githubusercontent.com/instrumenta/kubernetes-json-schema/master/v1.18.0/_definitions.json#/definitions/io.k8s.api.core.v1.PodSecurityContext",
+      "description": "SecurityContext holds pod-level security attributes and common container settings. Optional: Defaults to empty.  See type description for default values of each field."
+    },
+    "livenessProbe": {
+      "$ref": "https://raw.githubusercontent.com/instrumenta/kubernetes-json-schema/master/v1.18.0/_definitions.json#/definitions/io.k8s.api.core.v1.Probe",
+      "description": "Periodic probe of container liveness. Container will be restarted if the probe fails. Cannot be updated. More info: https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle#container-probes"
+    },
+    "readinessProbe": {
+      "$ref": "https://raw.githubusercontent.com/instrumenta/kubernetes-json-schema/master/v1.18.0/_definitions.json#/definitions/io.k8s.api.core.v1.Probe",
+      "description": "Periodic probe of container liveness. Container will be restarted if the probe fails. Cannot be updated. More info: https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle#container-probes"
+    },
+    "resources": {
+      "title": "Scanner pod resource requirements",
+      "type": "object",
+      "default": {},
+      "$ref": "https://raw.githubusercontent.com/instrumenta/kubernetes-json-schema/master/v1.18.0/_definitions.json#/definitions/io.k8s.api.core.v1.ResourceRequirements"
+    }
+  },
+  "required": [
+    "image",
+    "livenessProbe",
+    "readinessProbe",
+    "resources",
+    "applicationPort"
+  ]
+}

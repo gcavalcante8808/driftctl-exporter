@@ -154,3 +154,8 @@ cython_debug/
 docker-compose.yaml
 .gitignore
 report.sarif
+deploy/
+docs/
+justfile
+README.MD
+docker-compose.tests.yaml

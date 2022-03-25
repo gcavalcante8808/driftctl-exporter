@@ -2,6 +2,9 @@ version: '2.4'
 
 services:
   app:
+    build:
+      args:
+        POETRY_PARAMETERS: ""
     command:
       - just
       - coverage

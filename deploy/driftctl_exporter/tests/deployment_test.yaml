@@ -1,0 +1,63 @@
+suite: test that our deployment template supports monitoring configuration using annotations
+templates:
+  - deployment.yaml
+  - configmap.yaml
+  - secret.yaml
+
+arrange: &default-release
+  release:
+    name: some-release
+    namespace: SOME-NAMESPACE
+  set:
+    image:
+      tag: its-the-image-tag-value
+
+tests:
+  - it: should use stragegy info when .Values.deployment.strategy is specified
+    template: deployment.yaml
+    <<: *default-release
+    set:
+      deployment:
+        name: some-specific-deployment-name
+        strategy:
+          type: RollingUpdate
+          rollingUpdate:
+            maxUnavailable: 10
+            maxSurge: 999
+    asserts:
+      - equal:
+          path: spec.strategy.rollingUpdate
+          value:
+            maxUnavailable: 10
+            maxSurge: 999
+
+  - it: should use specific name when .Values.deployment.name is specified
+    template: deployment.yaml
+    <<: *default-release
+    set:
+      deployment:
+        name: some-specific-deployment-name
+    asserts:
+      - equal:
+          path: metadata.name
+          value: some-specific-deployment-name
+
+  - it: should use release name as fallback for deployment name when .Values.deployment.name is NOT specified
+    template: deployment.yaml
+    <<: *default-release
+    asserts:
+      - equal:
+          path: metadata.name
+          value: some-release
+
+  - it: should have environment variables mapped from configmap and secrets
+    template: deployment.yaml
+    <<: *default-release
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].envFrom
+          value:
+            - configMapRef:
+                name: some-release
+            - secretRef:
+                name: some-release

@@ -1,0 +1,98 @@
+image:
+  repository: gcavalcante8808/driftctl-exporter
+  pullPolicy: Always
+  tag: "latest"
+
+imagePullSecrets: []
+
+# Service Account for our application. True by default as we can use OPA and some other security related features that depends on it.
+serviceAccount:
+  create: true
+  annotations: {}
+  name: ""
+
+podAnnotations: {}
+
+cronjob:
+  schedule: "00 4 * * *"
+
+service:
+  name: ""
+  labels: {}
+  annotations: {}
+  port: 80
+
+deployment:
+  labels: {}
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+
+
+ingress:
+  enabled: false
+  annotations: {}
+  hosts:
+    - host: chart-example.local
+      paths:
+      - path: /
+  tls: []
+
+# https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/
+nodeSelector: {}
+
+# https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/
+tolerations: []
+
+# https://kubernetes.io/blog/2017/03/advanced-scheduling-in-kubernetes/
+affinity: {}
+
+# https://kubernetes.io/docs/tasks/configure-pod-container/security-context/
+# https://snyk.io/blog/10-kubernetes-security-context-settings-you-should-understand/
+podSecurityContext: {}
+securityContext: {}
+
+# https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/
+readinessProbe:
+  tcpSocket:
+    port: 8080
+  initialDelaySeconds: 5
+  periodSeconds: 10
+
+# https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/
+livenessProbe:
+  tcpSocket:
+    port: 8080
+  initialDelaySeconds: 5
+  periodSeconds: 10
+
+# https://kubernetes.io/docs/concepts/containers/container-lifecycle-hooks/
+terminationGracePeriodSeconds: 30
+
+# https://kubernetes.io/docs/tasks/configure-pod-container/assign-cpu-resource/
+resources:
+  limits:
+    cpu: 300m
+    memory: 128Mi
+  requests:
+    cpu: 300m
+    memory: 128Mi
+
+# Use only key:values pairs here (it's a syntax sugar for the normal syntax).
+environment: {}
+
+# Secrets can be specified here as key:values pairs and will be converted to base64 by helm.
+# WARNING: do not put secrets in values.yaml files directly, use something like helm-secrets to integrate instead.
+secrets: {}
+
+# Variables in the normal kubernetes syntax, using name/value.
+extraEnv: []
+
+# Extra configMaps or Secrets that can used by `EnvFrom` field on kubernetes.
+extraEnvFrom: []
+
+# This is the container and service port configured.
+# If you define it with a value `8080` both the containerPort and the servicePort will be `8080`.
+applicationPort: 8080

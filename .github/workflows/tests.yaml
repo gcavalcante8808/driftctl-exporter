@@ -8,11 +8,21 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+      - uses: extractions/setup-just@v1
 
-      - name: Test Coverage
-        run: docker-compose -f docker-compose.yaml -f docker-compose.tests.yaml up --exit-code-from app
+      - name: Code Coverage
+        run: just python-tests
 
       - name: CodeCov Upload
         uses: codecov/codecov-action@v1
         with:
           files: src/coverage.xml
+
+  chart-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: extractions/setup-just@v1
+
+      - name: Run helm chart unittests
+        run: just helm-chart-tests
