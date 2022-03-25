@@ -58,6 +58,10 @@ spec:
           command:
             - python
             - scan.py
+          volumeMounts:
+            - name: driftignore
+              mountPath: /usr/src/.driftignore
+              readOnly: true
       containers:
         - name: {{ .Release.Name }}
           securityContext:
@@ -80,12 +84,21 @@ spec:
             - name: http
               containerPort: {{ .Values.applicationPort }}
               protocol: TCP
+          volumeMounts:
+            - name: driftignore
+              mountPath: /usr/src/.driftignore
+              subPath: .driftignore
+              readOnly: true
           livenessProbe:
             {{- toYaml .Values.livenessProbe | nindent 12 }}
           readinessProbe:
             {{- toYaml .Values.readinessProbe | nindent 12 }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
+      volumes:
+        - name: driftignore
+          configMap:
+            name: {{ .Release.Name }}-driftignore
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

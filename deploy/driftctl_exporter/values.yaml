@@ -96,3 +96,6 @@ extraEnvFrom: []
 # This is the container and service port configured.
 # If you define it with a value `8080` both the containerPort and the servicePort will be `8080`.
 applicationPort: 8080
+
+# Resources that should be ignored by the drift-ctl scan. More info at: https://docs.driftctl.com/next/usage/cmd/gen-driftignore-usage/
+driftignore: "#Empty"

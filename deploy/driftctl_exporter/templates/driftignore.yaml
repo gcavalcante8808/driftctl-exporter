@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-driftignore
+  namespace: {{ .Release.Namespace }}
+  labels:
+  {{- include "pod-with-service-ingress.labels" . | nindent 4 }}
+data:
+  .driftignore: |+
+    {{ default "#Empty" .Values.driftignore | nindent 4 }}
