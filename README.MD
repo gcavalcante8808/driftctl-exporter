@@ -57,7 +57,7 @@ You can see a list with descriptions [here](docs/metrics.md).
 
 #### Helm and Kubernetes Support
 
-The project is already packaged to use with Kubernetes using Helm. You can see some infos [here](docs/helm_kuberentes.md).
+The project is already packaged to use with Kubernetes using Helm. You can see some infos [here](docs/helm_kubernetes.md).
 
 #### How It Works
 
