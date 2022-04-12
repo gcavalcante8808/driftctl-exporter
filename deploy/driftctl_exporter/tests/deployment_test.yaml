@@ -10,6 +10,8 @@ arrange: &default-release
     name: some-release
     namespace: SOME-NAMESPACE
   set:
+    podAnnotations:
+      some-pod: annotations
     image:
       tag: its-the-image-tag-value
 
@@ -18,8 +20,6 @@ tests:
     template: deployment.yaml
     <<: *default-release
     set:
-      podAnnotations:
-        some-pod: annotations
       deployment:
         name: some-specific-deployment-name
         annotations:
