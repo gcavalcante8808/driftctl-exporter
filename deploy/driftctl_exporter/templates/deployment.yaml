@@ -10,6 +10,7 @@ metadata:
   annotations:
     checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
     checksum/secrets: {{ include (print $.Template.BasePath "/secret.yaml") . | sha256sum }}
+    checksum/driftignore: {{ include (print $.Template.BasePath "/driftignore.yaml") . | sha256sum }}
 
 spec:
   {{ if .Values.deployment.strategy }}
@@ -26,6 +27,7 @@ spec:
       annotations:
         checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
         checksum/secrets: {{ include (print $.Template.BasePath "/secret.yaml") . | sha256sum }}
+        checksum/driftignore: {{ include (print $.Template.BasePath "/driftignore.yaml") . | sha256sum }}
       labels:
         {{- include "pod-with-service-ingress.selectorLabels" . | nindent 8 }}
         {{- with .Values.deployment.labels }}
@@ -61,6 +63,7 @@ spec:
           volumeMounts:
             - name: driftignore
               mountPath: /usr/src/.driftignore
+              subPath: .driftignore
               readOnly: true
       containers:
         - name: {{ .Release.Name }}
