@@ -3,6 +3,7 @@ templates:
   - deployment.yaml
   - configmap.yaml
   - secret.yaml
+  - driftignore.yaml
 
 arrange: &default-release
   release:
