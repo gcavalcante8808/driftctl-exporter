@@ -63,6 +63,7 @@ spec:
           volumeMounts:
             - name: driftignore
               mountPath: /usr/src/.driftignore
+              subPath: .driftignore
               readOnly: true
       containers:
         - name: {{ .Release.Name }}
