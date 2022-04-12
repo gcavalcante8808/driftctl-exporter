@@ -10,6 +10,8 @@ arrange: &default-release
     name: some-release
     namespace: SOME-NAMESPACE
   set:
+    podAnnotations:
+      some-pod: annotations
     image:
       tag: its-the-image-tag-value
 
@@ -20,6 +22,8 @@ tests:
     set:
       deployment:
         name: some-specific-deployment-name
+        annotations:
+          some-annotation: here
         strategy:
           type: RollingUpdate
           rollingUpdate:
