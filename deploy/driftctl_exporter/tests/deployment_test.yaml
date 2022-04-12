@@ -18,8 +18,12 @@ tests:
     template: deployment.yaml
     <<: *default-release
     set:
+      podAnnotations:
+        some-pod: annotations
       deployment:
         name: some-specific-deployment-name
+        annotations:
+          some-annotation: here
         strategy:
           type: RollingUpdate
           rollingUpdate:

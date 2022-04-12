@@ -8,6 +8,9 @@ metadata:
     {{- toYaml . | nindent 4 }}
   {{- end }}
   annotations:
+    {{- with .Values.deployment.annotations }}
+      {{- toYaml . | indent 4 }}
+    {{- end }}
     checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
     checksum/secrets: {{ include (print $.Template.BasePath "/secret.yaml") . | sha256sum }}
     checksum/driftignore: {{ include (print $.Template.BasePath "/driftignore.yaml") . | sha256sum }}
@@ -25,6 +28,9 @@ spec:
   template:
     metadata:
       annotations:
+        {{- with .Values.podAnnotations }}
+          {{- toYaml . | indent 8 }}
+        {{- end }}
         checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
         checksum/secrets: {{ include (print $.Template.BasePath "/secret.yaml") . | sha256sum }}
         checksum/driftignore: {{ include (print $.Template.BasePath "/driftignore.yaml") . | sha256sum }}

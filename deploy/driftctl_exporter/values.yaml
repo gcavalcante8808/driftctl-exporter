@@ -24,6 +24,7 @@ service:
 
 deployment:
   labels: {}
+  annotations: {}
   strategy:
     type: RollingUpdate
     rollingUpdate:
