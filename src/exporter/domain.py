@@ -15,6 +15,9 @@ class Rfc1808Url:
         return Rfc1808Url(scheme=parsed_url.scheme, netloc=parsed_url.netloc, path=parsed_url.path)
 
     def validate(self):
+        if 'file' in self.scheme:
+            return all([self.scheme, self.path])
+
         return all([self.scheme, self.netloc, self.path])
 
     def __post_init__(self):

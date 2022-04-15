@@ -1,4 +1,5 @@
 import json
+import tempfile
 from collections import Counter
 from pathlib import Path
 
@@ -13,18 +14,32 @@ def valid_s3_url():
 
 
 @pytest.fixture
+def valid_file_url():
+    _, file_path = tempfile.mkstemp()
+    return f'file:///tmp/some-path/last'
+
+
+@pytest.fixture
 def driftctl_json_output():
     pwd = Path(__file__).resolve().parent
     with open(f'{pwd}/fixtures/driftctl_output.json', 'rb') as drift:
         return json.load(drift)
 
 
-def test_parse_output_from_url_when_url_is_valid(valid_s3_url):
+def test_parse_output_from_s3_url_when_url_is_valid(valid_s3_url):
     s3_url = Rfc1808Url.from_url(valid_s3_url)
 
     assert 's3' == s3_url.scheme
     assert 'some-bucket' == s3_url.netloc
     assert 'some-path/some-nested-path/last-path' == s3_url.path
+
+
+def test_parse_output_from_file_url_when_url_is_valid(valid_file_url):
+    url = Rfc1808Url.from_url(valid_file_url)
+
+    assert 'file' == url.scheme
+    assert not url.netloc
+    assert 'tmp/some-path/last' == url.path
 
 
 def test_parse_output_from_url_when_url_is_INvalid(valid_s3_url):
