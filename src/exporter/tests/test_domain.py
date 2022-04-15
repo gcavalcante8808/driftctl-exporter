@@ -39,7 +39,7 @@ def test_parse_output_from_file_url_when_url_is_valid(valid_file_url):
 
     assert 'file' == url.scheme
     assert not url.netloc
-    assert 'tmp/some-path/last' == url.path
+    assert '/tmp/some-path/last' == url.path
 
 
 def test_parse_output_from_url_when_url_is_INvalid(valid_s3_url):

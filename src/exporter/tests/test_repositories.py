@@ -1,5 +1,6 @@
 import json
 import os
+import tempfile
 from pathlib import Path
 from unittest.mock import Mock
 from uuid import uuid4
@@ -8,7 +9,7 @@ import pytest
 
 from exporter.domain import Rfc1808Url
 from exporter.repositories import S3Repository, DriftScanCmdRepository, DriftScanCmdException, \
-    DriftScanInvalidResultError
+    DriftScanInvalidResultError, ResultFileStorage
 
 
 @pytest.fixture
@@ -19,11 +20,22 @@ def configure_minio_env_vars():
 
 
 @pytest.fixture
-def sample_json_file_url(configure_minio_env_vars):
+def sample_json_s3_url(configure_minio_env_vars):
     url = Rfc1808Url.from_url(f"s3://drift-bucket/{uuid4()}")
     content = {"SomeSampleJsonKey": "SomeSampleJsonValue"}
 
     S3Repository().save(url, json.dumps(content))
+
+    return url, content
+
+
+@pytest.fixture
+def sample_json_file_url():
+    _, file_path = tempfile.mkstemp()
+    url = Rfc1808Url.from_url(f'file://{file_path}')
+    content = {"SomeSampleJsonKey": "SomeSampleJsonValue"}
+
+    ResultFileStorage().save(url, json.dumps(content).encode())
 
     return url, content
 
@@ -90,8 +102,8 @@ def test_s3_repository_configuration_when_custom_s3_variables_are_correctly_conf
     assert 'aws_secret_access_key' in repo.s3_session_config
 
 
-def test_s3_repository_get_objects_when_called(sample_json_file_url):
-    url, content = sample_json_file_url
+def test_s3_repository_get_objects_when_called(sample_json_s3_url):
+    url, content = sample_json_s3_url
     repo = S3Repository()
 
     result = repo.open(url)
@@ -105,6 +117,27 @@ def test_s3_repository_save_object_when_called(configure_minio_env_vars):
     repo = S3Repository()
 
     repo.save(url, json.dumps(content))
+    saved_file = repo.open(url)
+
+    assert saved_file == content
+
+
+def test_file_repository_get_objects_when_called(sample_json_file_url):
+    url, expected_content = sample_json_file_url
+    repo = ResultFileStorage()
+
+    result = repo.open(url)
+
+    assert result == expected_content
+
+
+def test_file_repository_save_object_when_called():
+    _, file_path = tempfile.mkstemp()
+    url = Rfc1808Url.from_url(f'file://{file_path}')
+    content = {'SomeKey': 'SomeValue'}
+    repo = ResultFileStorage()
+
+    repo.save(url, json.dumps(content).encode())
     saved_file = repo.open(url)
 
     assert saved_file == content

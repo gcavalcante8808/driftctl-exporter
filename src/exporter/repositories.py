@@ -59,7 +59,7 @@ class S3Repository:
                  'aws_secret_access_key': os.getenv('AWS_S3_SECRET_ACCESS_KEY')
                  })
 
-    def save(self, output_config, content):
+    def save(self, output_config: Rfc1808Url, content):
         self.s3.put_object(Key=output_config.path, Bucket=output_config.netloc, Body=content,
                            ContentType="application/json")
 
@@ -67,3 +67,14 @@ class S3Repository:
         result = self.s3.get_object(Key=url.path, Bucket=url.netloc)
 
         return json.load(result.get('Body'))
+
+
+class ResultFileStorage:
+
+    def save(self, output_config: Rfc1808Url, content):
+        with open(output_config.path, 'wb') as resultfile:
+            resultfile.write(content)
+
+    def open(self, url: Rfc1808Url):
+        with open(url.path, 'rb') as resultfile:
+            return json.loads(resultfile.read())
