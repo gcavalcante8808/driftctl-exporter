@@ -4,7 +4,7 @@ from pathlib import Path
 from uuid import uuid4
 
 import pytest
-from exporter.repositories import S3Repository
+from exporter.repositories import S3Repository, SmartyResultRepositoryFactory
 
 from exporter.domain import Rfc1808Url, DriftOutput
 
@@ -33,17 +33,56 @@ def driftctl_output():
 
 
 @pytest.fixture
-def sample_json_file_url(s3_config, driftctl_output):
+def sample_json_s3_url(s3_config, driftctl_output):
     url = Rfc1808Url.from_url(s3_config)
+    repo = SmartyResultRepositoryFactory.get_repository_by_scheme_url(url)
 
-    S3Repository().save(url, driftctl_output)
+    repo.save(url, driftctl_output)
 
     return url, json.loads(driftctl_output)
 
 
-async def test_that_supported_metrics_are_being_computed_and_exposed(aiohttp_client, sample_json_file_url, loop):
+@pytest.fixture
+def filestorage_config():
+    pwd = Path(__file__).resolve().parent
+    url = f'file://{pwd}/fixtures/driftctl_output.json'
+
+    os.environ['RESULT_PATH'] = url
+
+    return url
+
+
+@pytest.fixture
+def sample_json_filestorage_url(filestorage_config, driftctl_output):
+    url = Rfc1808Url.from_url(filestorage_config)
+
+    return url, json.loads(driftctl_output)
+
+
+async def test_that_supported_metrics_are_being_computed_and_exposed(aiohttp_client, sample_json_s3_url, loop):
     client = await aiohttp_client(app)
-    _, content = sample_json_file_url
+    _, content = sample_json_s3_url
+    drift = DriftOutput.from_json(content)
+    supported_metrics = drift.as_dict().keys()
+
+    response = await client.get('/metrics')
+    assert response.status == 200
+    text = await response.text()
+    computed_metrics = text_string_to_metric_families(text)
+
+    supported_metrics_samples = []
+    for family in computed_metrics:
+        for sample in family.samples:
+            if sample.name in supported_metrics:
+                supported_metrics_samples.append(sample)
+                assert drift.as_dict()[sample.name] == sample.value
+
+    assert supported_metrics_samples
+
+
+async def test_that_supported_metrics_are_being_computed_and_exposed(aiohttp_client, sample_json_filestorage_url, loop):
+    client = await aiohttp_client(app)
+    _, content = sample_json_filestorage_url
     drift = DriftOutput.from_json(content)
     supported_metrics = drift.as_dict().keys()
 
