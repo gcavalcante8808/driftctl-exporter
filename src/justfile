@@ -5,6 +5,7 @@ coverage:
   pytest --cov-report term \
         --cov-report xml:coverage.xml \
         --cov=.
+  just flake8
 
 flake8:
     flake8 .
