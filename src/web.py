@@ -23,8 +23,11 @@ async def metrics(request):
     return resp
 
 
-app = web.Application()
-app.add_routes(routes)
+async def create_app():
+    app = web.Application()
+    app.add_routes(routes)
+
+    return app
 
 if __name__ == '__main__':
-    web.run_app(app, host='0.0.0.0')
+    web.run_app(create_app(), host='0.0.0.0')

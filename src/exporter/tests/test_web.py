@@ -8,7 +8,7 @@ from prometheus_client.parser import text_string_to_metric_families
 
 from exporter.domain import Rfc1808Url, DriftOutput
 from exporter.repositories import SmartyResultRepositoryFactory
-from web import app
+from web import create_app
 
 
 @pytest.fixture
@@ -60,6 +60,7 @@ def sample_json_filestorage_url(filestorage_config, driftctl_output):
 
 async def test_that_supported_metrics_are_being_computed_and_exposed_when_using_s3_repo(aiohttp_client,
                                                                                         sample_json_s3_url, loop):
+    app = await create_app()
     client = await aiohttp_client(app)
     _, content = sample_json_s3_url
     drift = DriftOutput.from_json(content)
@@ -83,6 +84,7 @@ async def test_that_supported_metrics_are_being_computed_and_exposed_when_using_
 async def test_that_supported_metrics_are_being_computed_and_exposed_when_using_file_repo(aiohttp_client,
                                                                                           sample_json_filestorage_url,
                                                                                           loop):
+    app = await create_app()
     client = await aiohttp_client(app)
     _, content = sample_json_filestorage_url
     drift = DriftOutput.from_json(content)
