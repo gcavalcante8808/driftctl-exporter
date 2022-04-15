@@ -1,3 +1,4 @@
+import enum
 import json
 import os
 
@@ -78,3 +79,24 @@ class ResultFileStorage:
     def open(self, url: Rfc1808Url):
         with open(url.path, 'rb') as resultfile:
             return json.loads(resultfile.read())
+
+
+class SupportedRepositories(enum.Enum):
+    FILE = ResultFileStorage
+    S3 = S3Repository
+
+    @classmethod
+    def list(cls):
+        return list(map(lambda c: c.name, cls))
+
+
+class SmartyResultRepositoryFactory:
+    @staticmethod
+    def get_repository_by_scheme_url(url: Rfc1808Url):
+        repository = getattr(SupportedRepositories, url.scheme.upper(), None)
+        if not repository:
+            raise ValueError(
+                f"Only {SupportedRepositories.list()} repositories are supported. The {url.scheme} storage, "
+                f"isn't supported.")
+
+        return repository.value()

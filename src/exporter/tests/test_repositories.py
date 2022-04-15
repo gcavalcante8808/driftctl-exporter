@@ -9,7 +9,7 @@ import pytest
 
 from exporter.domain import Rfc1808Url
 from exporter.repositories import S3Repository, DriftScanCmdRepository, DriftScanCmdException, \
-    DriftScanInvalidResultError, ResultFileStorage
+    DriftScanInvalidResultError, ResultFileStorage, SmartyResultRepositoryFactory
 
 
 @pytest.fixture
@@ -141,3 +141,23 @@ def test_file_repository_save_object_when_called():
     saved_file = repo.open(url)
 
     assert saved_file == content
+
+
+def test_smarty_repository_encapsulates_s3repo_actions_when_s3_in_result_path_config():
+    result_path = 's3://some-bucket/some-folder/some-object'
+    os.environ['RESULT_PATH'] = result_path
+    url = Rfc1808Url.from_url(result_path)
+
+    repo = SmartyResultRepositoryFactory.get_repository_by_scheme_url(url=url)
+
+    assert type(repo) == S3Repository
+
+
+def test_smarty_repository_encapsulates_filestorage_repo_actions_when_file_in_result_path_config():
+    result_path = 'file:///tmp/some-folder/some-file'
+    os.environ['RESULT_PATH'] = result_path
+    url = Rfc1808Url.from_url(result_path)
+
+    repo = SmartyResultRepositoryFactory.get_repository_by_scheme_url(url=url)
+
+    assert type(repo) == ResultFileStorage
