@@ -64,7 +64,7 @@ def test_driftctl_cmd_repository_scan_fails_when_returned_output_is_not_json_enc
     cmd.driftctl = Mock()
     cmd.driftctl.return_value = returned_value
 
-    with pytest.raises(DriftScanCmdException) as ctx:
+    with pytest.raises(DriftScanCmdException):
         cmd.scan()
 
 
@@ -74,7 +74,7 @@ def test_driftctl_cmd_repository_scan_fails_when_returned_output_is_json_encodab
     cmd.driftctl = Mock()
     cmd.driftctl.return_value = returned_value
 
-    with pytest.raises(DriftScanInvalidResultError) as ctx:
+    with pytest.raises(DriftScanInvalidResultError):
         cmd.scan()
 
 

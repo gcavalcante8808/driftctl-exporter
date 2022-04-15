@@ -33,7 +33,7 @@ class DriftScanCmdRepository:
             raise DriftScanCmdException(
                 f"""The drift scan didn't complete successfully. Command output:
                 python_error: {str(ctx)}
-                cmd_output: {scan_result} 
+                cmd_output: {scan_result}
                 """)
         except KeyError as ctx:
             raise DriftScanInvalidResultError(str(ctx))

@@ -24,7 +24,7 @@ class Rfc1808Url:
         if not self.validate():
             raise ValueError()
 
-        if not 'file' in self.scheme:
+        if 'file' not in self.scheme:
             self.path = self.path.lstrip('/')
 
 

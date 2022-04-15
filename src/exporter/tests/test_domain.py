@@ -16,7 +16,7 @@ def valid_s3_url():
 @pytest.fixture
 def valid_file_url():
     _, file_path = tempfile.mkstemp()
-    return f'file:///tmp/some-path/last'
+    return 'file:///tmp/some-path/last'
 
 
 @pytest.fixture

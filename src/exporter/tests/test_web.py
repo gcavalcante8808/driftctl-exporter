@@ -4,12 +4,11 @@ from pathlib import Path
 from uuid import uuid4
 
 import pytest
-from exporter.repositories import S3Repository, SmartyResultRepositoryFactory
+from prometheus_client.parser import text_string_to_metric_families
 
 from exporter.domain import Rfc1808Url, DriftOutput
-
+from exporter.repositories import SmartyResultRepositoryFactory
 from web import app
-from prometheus_client.parser import text_string_to_metric_families
 
 
 @pytest.fixture
@@ -59,7 +58,8 @@ def sample_json_filestorage_url(filestorage_config, driftctl_output):
     return url, json.loads(driftctl_output)
 
 
-async def test_that_supported_metrics_are_being_computed_and_exposed(aiohttp_client, sample_json_s3_url, loop):
+async def test_that_supported_metrics_are_being_computed_and_exposed_when_using_s3_repo(aiohttp_client,
+                                                                                        sample_json_s3_url, loop):
     client = await aiohttp_client(app)
     _, content = sample_json_s3_url
     drift = DriftOutput.from_json(content)
@@ -80,7 +80,9 @@ async def test_that_supported_metrics_are_being_computed_and_exposed(aiohttp_cli
     assert supported_metrics_samples
 
 
-async def test_that_supported_metrics_are_being_computed_and_exposed(aiohttp_client, sample_json_filestorage_url, loop):
+async def test_that_supported_metrics_are_being_computed_and_exposed_when_using_file_repo(aiohttp_client,
+                                                                                          sample_json_filestorage_url,
+                                                                                          loop):
     client = await aiohttp_client(app)
     _, content = sample_json_filestorage_url
     drift = DriftOutput.from_json(content)

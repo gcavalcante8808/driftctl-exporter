@@ -8,8 +8,8 @@ import pytest
 from prometheus_client import REGISTRY
 
 from exporter.domain import Rfc1808Url, DriftOutput
-from exporter.repositories import S3Repository, DriftScanCmdRepository, DriftScanCmdException, \
-    DriftScanInvalidResultError, ResultFileStorage, SmartyResultRepositoryFactory
+from exporter.repositories import DriftScanCmdRepository, DriftScanCmdException, \
+    DriftScanInvalidResultError, SmartyResultRepositoryFactory
 from exporter.usecases import scan_and_save_drift_on_s3_usecase, generate_metrics_from_drift_results_usecase
 
 

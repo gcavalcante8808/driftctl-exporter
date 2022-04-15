@@ -5,7 +5,7 @@ from aiohttp import web
 from prometheus_client import CONTENT_TYPE_LATEST
 
 from exporter.domain import Rfc1808Url
-from exporter.repositories import S3Repository, SmartyResultRepositoryFactory
+from exporter.repositories import SmartyResultRepositoryFactory
 from exporter.usecases import generate_metrics_from_drift_results_usecase
 
 routes = web.RouteTableDef()
