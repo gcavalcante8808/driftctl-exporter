@@ -9,7 +9,7 @@ from prometheus_client import REGISTRY
 
 from exporter.domain import Rfc1808Url, DriftOutput
 from exporter.repositories import S3Repository, DriftScanCmdRepository, DriftScanCmdException, \
-    DriftScanInvalidResultError, ResultFileStorage
+    DriftScanInvalidResultError, ResultFileStorage, SmartyResultRepositoryFactory
 from exporter.usecases import scan_and_save_drift_on_s3_usecase, generate_metrics_from_drift_results_usecase
 
 
@@ -31,7 +31,8 @@ def drift_repository(driftctl_output):
 
 @pytest.fixture
 def s3_repository(driftctl_output):
-    s3_repo = S3Repository()
+    s3_url = Rfc1808Url.from_url('s3://some-bucket/some-path/some-object')
+    s3_repo = SmartyResultRepositoryFactory.get_repository_by_scheme_url(url=s3_url)
     s3_repo.save = Mock()
     s3_repo.open = Mock()
     s3_repo.open.return_value = json.loads(driftctl_output)
@@ -41,7 +42,8 @@ def s3_repository(driftctl_output):
 
 @pytest.fixture
 def filestorage_repository(driftctl_output):
-    repo = ResultFileStorage()
+    file_url = Rfc1808Url.from_url('file:///some/path/goes/here')
+    repo = SmartyResultRepositoryFactory.get_repository_by_scheme_url(file_url)
     repo.save = Mock()
     repo.open = Mock()
     repo.open.return_value = json.loads(driftctl_output)
