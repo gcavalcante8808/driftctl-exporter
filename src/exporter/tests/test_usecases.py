@@ -10,7 +10,7 @@ from prometheus_client import REGISTRY
 from exporter.domain import Rfc1808Url, DriftOutput
 from exporter.repositories import DriftScanCmdRepository, DriftScanCmdException, \
     DriftScanInvalidResultError, SmartyResultRepositoryFactory
-from exporter.usecases import scan_and_save_drift_on_s3_usecase, generate_metrics_from_drift_results_usecase
+from exporter.usecases import scan_and_save_drift_on_storage_usecase, generate_metrics_from_drift_results_usecase
 
 
 @pytest.fixture
@@ -58,7 +58,7 @@ def test_scan_and_save_a_drift_on_filestorage_when_all_configurations_are_valid(
     os.environ['RESULT_PATH'] = f'file://{file_path}'
     filestorage_config = Rfc1808Url.from_url(f'file://{file_path}')
 
-    scan_and_save_drift_on_s3_usecase(drift_repository, filestorage_repository)
+    scan_and_save_drift_on_storage_usecase(drift_repository, filestorage_repository)
 
     assert drift_repository.scan.called
     assert filestorage_repository.save.called_with_args(**{'output_config': filestorage_config, 'content': driftctl_output})
@@ -69,7 +69,7 @@ def test_scan_and_save_a_drift_on_s3_when_all_configurations_are_valid(drift_rep
     os.environ['RESULT_PATH'] = 's3://another-bucket-to-hold/another-result-to-keep.json'
     s3_config = Rfc1808Url.from_url('s3://another-bucket-to-hold/another-result-to-keep.json')
 
-    scan_and_save_drift_on_s3_usecase(drift_repository, s3_repository)
+    scan_and_save_drift_on_storage_usecase(drift_repository, s3_repository)
 
     assert drift_repository.scan.called
     assert s3_repository.save.called_with_args(**{'output_config': s3_config, 'content': driftctl_output})
@@ -79,14 +79,14 @@ def test_scan_and_save_a_drift_on_s3_fails_when_drift_scan_cmd_return_errors(dri
     drift_repository.scan.side_effect = DriftScanCmdException()
 
     with pytest.raises(DriftScanCmdException):
-        scan_and_save_drift_on_s3_usecase(drift_repository, s3_repository)
+        scan_and_save_drift_on_storage_usecase(drift_repository, s3_repository)
 
 
 def test_scan_and_save_a_drift_on_s3_fails_when_drift_scan_result_is_invalid(drift_repository, s3_repository):
     drift_repository.scan.side_effect = DriftScanInvalidResultError()
 
     with pytest.raises(DriftScanInvalidResultError):
-        scan_and_save_drift_on_s3_usecase(drift_repository, s3_repository)
+        scan_and_save_drift_on_storage_usecase(drift_repository, s3_repository)
 
 
 def test_generate_metrics_from_drift_integer_attributes(s3_repository, driftctl_output):
