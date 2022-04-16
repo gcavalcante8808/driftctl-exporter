@@ -1,5 +1,6 @@
 import json
 import os
+import tempfile
 from pathlib import Path
 from unittest.mock import Mock
 from uuid import uuid4
@@ -8,7 +9,7 @@ import pytest
 
 from exporter.domain import Rfc1808Url
 from exporter.repositories import S3Repository, DriftScanCmdRepository, DriftScanCmdException, \
-    DriftScanInvalidResultError
+    DriftScanInvalidResultError, ResultFileStorage, SmartyResultRepositoryFactory
 
 
 @pytest.fixture
@@ -19,11 +20,22 @@ def configure_minio_env_vars():
 
 
 @pytest.fixture
-def sample_json_file_url(configure_minio_env_vars):
+def sample_json_s3_url(configure_minio_env_vars):
     url = Rfc1808Url.from_url(f"s3://drift-bucket/{uuid4()}")
     content = {"SomeSampleJsonKey": "SomeSampleJsonValue"}
 
     S3Repository().save(url, json.dumps(content))
+
+    return url, content
+
+
+@pytest.fixture
+def sample_json_file_url():
+    _, file_path = tempfile.mkstemp()
+    url = Rfc1808Url.from_url(f'file://{file_path}')
+    content = {"SomeSampleJsonKey": "SomeSampleJsonValue"}
+
+    ResultFileStorage().save(url, json.dumps(content))
 
     return url, content
 
@@ -52,7 +64,7 @@ def test_driftctl_cmd_repository_scan_fails_when_returned_output_is_not_json_enc
     cmd.driftctl = Mock()
     cmd.driftctl.return_value = returned_value
 
-    with pytest.raises(DriftScanCmdException) as ctx:
+    with pytest.raises(DriftScanCmdException):
         cmd.scan()
 
 
@@ -62,7 +74,7 @@ def test_driftctl_cmd_repository_scan_fails_when_returned_output_is_json_encodab
     cmd.driftctl = Mock()
     cmd.driftctl.return_value = returned_value
 
-    with pytest.raises(DriftScanInvalidResultError) as ctx:
+    with pytest.raises(DriftScanInvalidResultError):
         cmd.scan()
 
 
@@ -90,8 +102,8 @@ def test_s3_repository_configuration_when_custom_s3_variables_are_correctly_conf
     assert 'aws_secret_access_key' in repo.s3_session_config
 
 
-def test_s3_repository_get_objects_when_called(sample_json_file_url):
-    url, content = sample_json_file_url
+def test_s3_repository_get_objects_when_called(sample_json_s3_url):
+    url, content = sample_json_s3_url
     repo = S3Repository()
 
     result = repo.open(url)
@@ -108,3 +120,53 @@ def test_s3_repository_save_object_when_called(configure_minio_env_vars):
     saved_file = repo.open(url)
 
     assert saved_file == content
+
+
+def test_file_repository_get_objects_when_called(sample_json_file_url):
+    url, expected_content = sample_json_file_url
+    repo = ResultFileStorage()
+
+    result = repo.open(url)
+
+    assert result == expected_content
+
+
+def test_file_repository_save_object_when_called():
+    _, file_path = tempfile.mkstemp()
+    url = Rfc1808Url.from_url(f'file://{file_path}')
+    content = {'SomeKey': 'SomeValue'}
+    repo = ResultFileStorage()
+
+    repo.save(url, json.dumps(content))
+    saved_file = repo.open(url)
+
+    assert saved_file == content
+
+
+def test_smarty_repository_returns_s3torage_instance_when_scheme_is_s3():
+    result_path = 's3://some-bucket/some-folder/some-object'
+    os.environ['RESULT_PATH'] = result_path
+    url = Rfc1808Url.from_url(result_path)
+
+    repo = SmartyResultRepositoryFactory.get_repository_by_scheme_url(url=url)
+
+    assert type(repo) == S3Repository
+
+
+def test_smarty_repository_returns_filestorage_instance_when_scheme_is_file():
+    result_path = 'file:///tmp/some-folder/some-file'
+    os.environ['RESULT_PATH'] = result_path
+    url = Rfc1808Url.from_url(result_path)
+
+    repo = SmartyResultRepositoryFactory.get_repository_by_scheme_url(url=url)
+
+    assert type(repo) == ResultFileStorage
+
+
+def test_smarty_repository_raise_error_when_url_scheme_isnt_supported():
+    result_path = 'unknown://some/strange/path/here.json'
+    os.environ['RESULT_PATH'] = result_path
+    url = Rfc1808Url.from_url(result_path)
+
+    with pytest.raises(ValueError):
+        SmartyResultRepositoryFactory.get_repository_by_scheme_url(url=url)

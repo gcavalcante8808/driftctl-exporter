@@ -1,3 +1,4 @@
+import enum
 import json
 import os
 
@@ -32,7 +33,7 @@ class DriftScanCmdRepository:
             raise DriftScanCmdException(
                 f"""The drift scan didn't complete successfully. Command output:
                 python_error: {str(ctx)}
-                cmd_output: {scan_result} 
+                cmd_output: {scan_result}
                 """)
         except KeyError as ctx:
             raise DriftScanInvalidResultError(str(ctx))
@@ -59,7 +60,7 @@ class S3Repository:
                  'aws_secret_access_key': os.getenv('AWS_S3_SECRET_ACCESS_KEY')
                  })
 
-    def save(self, output_config, content):
+    def save(self, output_config: Rfc1808Url, content):
         self.s3.put_object(Key=output_config.path, Bucket=output_config.netloc, Body=content,
                            ContentType="application/json")
 
@@ -67,3 +68,35 @@ class S3Repository:
         result = self.s3.get_object(Key=url.path, Bucket=url.netloc)
 
         return json.load(result.get('Body'))
+
+
+class ResultFileStorage:
+
+    def save(self, output_config: Rfc1808Url, content):
+        with open(output_config.path, 'w') as resultfile:
+            resultfile.write(content)
+
+    def open(self, url: Rfc1808Url):
+        with open(url.path, 'rb') as resultfile:
+            return json.loads(resultfile.read())
+
+
+class SupportedRepositories(enum.Enum):
+    FILE = ResultFileStorage
+    S3 = S3Repository
+
+    @classmethod
+    def list(cls):
+        return list(map(lambda c: c.name, cls))
+
+
+class SmartyResultRepositoryFactory:
+    @staticmethod
+    def get_repository_by_scheme_url(url: Rfc1808Url):
+        repository = getattr(SupportedRepositories, url.scheme.upper(), None)
+        if not repository:
+            raise ValueError(
+                f"Only {SupportedRepositories.list()} repositories are supported. The {url.scheme} storage, "
+                f"isn't supported.")
+
+        return repository.value()

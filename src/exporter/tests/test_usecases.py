@@ -1,5 +1,6 @@
 import json
 import os
+import tempfile
 from pathlib import Path
 from unittest.mock import Mock
 
@@ -7,9 +8,9 @@ import pytest
 from prometheus_client import REGISTRY
 
 from exporter.domain import Rfc1808Url, DriftOutput
-from exporter.repositories import S3Repository, DriftScanCmdRepository, DriftScanCmdException, \
-    DriftScanInvalidResultError
-from exporter.usecases import scan_and_save_drift_on_s3_usecase, generate_metrics_from_drift_results_usecase
+from exporter.repositories import DriftScanCmdRepository, DriftScanCmdException, \
+    DriftScanInvalidResultError, SmartyResultRepositoryFactory
+from exporter.usecases import scan_and_save_drift_on_storage_usecase, generate_metrics_from_drift_results_usecase
 
 
 @pytest.fixture
@@ -30,7 +31,8 @@ def drift_repository(driftctl_output):
 
 @pytest.fixture
 def s3_repository(driftctl_output):
-    s3_repo = S3Repository()
+    s3_url = Rfc1808Url.from_url('s3://some-bucket/some-path/some-object')
+    s3_repo = SmartyResultRepositoryFactory.get_repository_by_scheme_url(url=s3_url)
     s3_repo.save = Mock()
     s3_repo.open = Mock()
     s3_repo.open.return_value = json.loads(driftctl_output)
@@ -38,12 +40,36 @@ def s3_repository(driftctl_output):
     return s3_repo
 
 
+@pytest.fixture
+def filestorage_repository(driftctl_output):
+    file_url = Rfc1808Url.from_url('file:///some/path/goes/here')
+    repo = SmartyResultRepositoryFactory.get_repository_by_scheme_url(file_url)
+    repo.save = Mock()
+    repo.open = Mock()
+    repo.open.return_value = json.loads(driftctl_output)
+
+    return repo
+
+
+def test_scan_and_save_a_drift_on_filestorage_when_all_configurations_are_valid(drift_repository,
+                                                                                filestorage_repository,
+                                                                                driftctl_output):
+    _, file_path = tempfile.mkstemp()
+    os.environ['RESULT_PATH'] = f'file://{file_path}'
+    filestorage_config = Rfc1808Url.from_url(f'file://{file_path}')
+
+    scan_and_save_drift_on_storage_usecase(drift_repository, filestorage_repository)
+
+    assert drift_repository.scan.called
+    assert filestorage_repository.save.called_with_args(**{'output_config': filestorage_config, 'content': driftctl_output})
+
+
 def test_scan_and_save_a_drift_on_s3_when_all_configurations_are_valid(drift_repository, s3_repository,
                                                                        driftctl_output):
     os.environ['RESULT_PATH'] = 's3://another-bucket-to-hold/another-result-to-keep.json'
     s3_config = Rfc1808Url.from_url('s3://another-bucket-to-hold/another-result-to-keep.json')
 
-    scan_and_save_drift_on_s3_usecase(drift_repository, s3_repository)
+    scan_and_save_drift_on_storage_usecase(drift_repository, s3_repository)
 
     assert drift_repository.scan.called
     assert s3_repository.save.called_with_args(**{'output_config': s3_config, 'content': driftctl_output})
@@ -53,14 +79,14 @@ def test_scan_and_save_a_drift_on_s3_fails_when_drift_scan_cmd_return_errors(dri
     drift_repository.scan.side_effect = DriftScanCmdException()
 
     with pytest.raises(DriftScanCmdException):
-        scan_and_save_drift_on_s3_usecase(drift_repository, s3_repository)
+        scan_and_save_drift_on_storage_usecase(drift_repository, s3_repository)
 
 
 def test_scan_and_save_a_drift_on_s3_fails_when_drift_scan_result_is_invalid(drift_repository, s3_repository):
     drift_repository.scan.side_effect = DriftScanInvalidResultError()
 
     with pytest.raises(DriftScanInvalidResultError):
-        scan_and_save_drift_on_s3_usecase(drift_repository, s3_repository)
+        scan_and_save_drift_on_storage_usecase(drift_repository, s3_repository)
 
 
 def test_generate_metrics_from_drift_integer_attributes(s3_repository, driftctl_output):
