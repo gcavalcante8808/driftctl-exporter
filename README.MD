@@ -10,13 +10,18 @@ This project doesn't have a direct relation with [GitHub - snyk/driftctl: Detect
 
 #### How to use it
 
-The app works with two main scripts: scan.py and web.py.
+Before starting, you'll be going to need:
 
-The first thing is to run the scan.py, which runs the `drifctl scan` command and keep the result in the `./data` directory (or a S3 bucket) defined by the environment variable `RESULT_PATH`:
+ * Docker (and optionally docker-compose) installed;
+ * An AWS Credential capable to read almost all account resources. Usually this implies a set of permissions worthy of `ReadOnlyAccess`.
+
+> The attachment of the `ReadOnlyAccess` policy in the Crential/IAM ROlE which will be used with driftctl (and driftctl-exporter) is the easiest way to sling the project up, but you may want to create a better/the least privileged policy and takes some other arguments in consideration like the ones present on the excellent `https://alestic.com/2015/10/aws-iam-readonly-too-permissive/` reading.
+
+As the app uses two main scripts (scan.py and web.py) to create drift result and to expose it as metrics in the `/metrics` endpoint, the first thing is to run the scan.py itself:
 
 ```bash
 docker run -it --rm gcavalcante8808/driftctl-exporter \
- - $(pwd)/data:/data \
+ -v $(pwd)/data:/data \
  -e DCTL_FROM="tfstate+s3://terraform-bucket/terraform.tfstate" \
  -e RESULT_PATH="file:///data/result.json" \
  -e AWS_REGION="us-east-1"\
@@ -25,11 +30,11 @@ docker run -it --rm gcavalcante8808/driftctl-exporter \
  python scan.py
 ```
 
-During the scan.py execution, its possible to check if the proccess went well by looking at the logs:
+During the scan.py execution, It's possible to check if the process went well by checking the logs:
 
-![img.png](img.png)
+![img.png](docs/scan_logs.png)
 
-After the scan.py conclusion, a driftctl result file should be present on `./data/result.json` (as specified in the `RESULT_PATH` environment variable) and thus it will be exposed in the openmetrics format by running the web.py:
+After the scan.py conclusion, a driftctl result file should be present on `./data/result.json` (as specified in the `RESULT_PATH` environment variable) and thus it's possible to check the metrics by running the web.py:
 
 ```bash
 docker run -it --rm gcavalcante8808/driftctl-exporter \
@@ -42,11 +47,11 @@ docker run -it --rm gcavalcante8808/driftctl-exporter \
  python web.py
 ```
 
-You can see the metrics by acessing the URL: `http://localhost:8080/metrics`
+And accessing the URL: `http://localhost:8080/metrics`
 
-#### Environment Variables
+#### Application Configuration
 
-The application read its config from some environment variables:
+The application read its config mainly from following environment variables:
 
 |                          | Description                                                                                                                                                                                                                                                                                                                           | Required | Default |
 | ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- | ------- |
@@ -60,17 +65,29 @@ The application read its config from some environment variables:
 
 You can see a list with descriptions [here](docs/metrics.md).
 
+#### Supported Storages
+
+Besides the default example `file` storage usage (which persists drift result files in the local file system), its possible (and often recommended) to point RESULTS_PATH to a s3 bucket, making the application really stateless.
+
+You can find more information about the results storage [here](docs/storage_support.md).
+
 #### Helm and Kubernetes Support
 
 The project is already packaged to use with Kubernetes using Helm. You can see some infos [here](docs/helm_kubernetes.md).
 
-#### How It Works
+#### How It Really Works
 
 There is some more details about the scan, web and workflow [here](docs/howitworks.md).
 
-#### Other
+#### Docker WalkTrough
 
 There is a docker-compose.yaml file used to develop/testing and that can be tweaked to run the project locally; more infos [here](docs/walktrough_docker.md).
+
+### Other Considerations
+
+Currently, the project only supports `file` and `s3` storages for driftctl results persistence/retrieve by its scripts. 
+
+As the driftctl project itself advances in support other cloud environments like GCP and Azure, my plan is to add more storages like GCS and Azure Storage in the future.
 
 ### Author
 
