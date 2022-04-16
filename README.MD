@@ -89,6 +89,12 @@ Currently, the project only supports `file` and `s3` storages for driftctl resul
 
 As the driftctl project itself advances in support other cloud environments like GCP and Azure, my plan is to add more storages like GCS and Azure Storage in the future.
 
+### Contributions
+
+If you think that the project is useful and want to do some contributions, you can do so by sending some NEAR to the following wallet:
+
+`3adcb2cd-7edd-43f8-98cd-61aed44f564e.near`
+
 ### Author
 
-Author: Gabriel Abdalla Cavalcante Silva (gabriel.cavalcante88@gmail.com)
+Author: Gabriel Abdalla Cavalcante Silva (gabriel.cavalcante88 at gmail.com)
