@@ -143,7 +143,7 @@ def test_file_repository_save_object_when_called():
     assert saved_file == content
 
 
-def test_smarty_repository_encapsulates_s3repo_actions_when_s3_in_result_path_config():
+def test_smarty_repository_returns_s3torage_instance_when_scheme_is_s3():
     result_path = 's3://some-bucket/some-folder/some-object'
     os.environ['RESULT_PATH'] = result_path
     url = Rfc1808Url.from_url(result_path)
@@ -153,7 +153,7 @@ def test_smarty_repository_encapsulates_s3repo_actions_when_s3_in_result_path_co
     assert type(repo) == S3Repository
 
 
-def test_smarty_repository_encapsulates_filestorage_repo_actions_when_file_in_result_path_config():
+def test_smarty_repository_returns_filestorage_instance_when_scheme_is_file():
     result_path = 'file:///tmp/some-folder/some-file'
     os.environ['RESULT_PATH'] = result_path
     url = Rfc1808Url.from_url(result_path)
@@ -161,3 +161,12 @@ def test_smarty_repository_encapsulates_filestorage_repo_actions_when_file_in_re
     repo = SmartyResultRepositoryFactory.get_repository_by_scheme_url(url=url)
 
     assert type(repo) == ResultFileStorage
+
+
+def test_smarty_repository_raise_error_when_url_scheme_isnt_supported():
+    result_path = 'unknown://some/strange/path/here.json'
+    os.environ['RESULT_PATH'] = result_path
+    url = Rfc1808Url.from_url(result_path)
+
+    with pytest.raises(ValueError):
+        SmartyResultRepositoryFactory.get_repository_by_scheme_url(url=url)
