@@ -58,6 +58,13 @@ def sample_json_filestorage_url(filestorage_config, driftctl_output):
     return url, json.loads(driftctl_output)
 
 
+async def test_that_make_app_returns_a_new_instance_of_the_app():
+    app1 = create_app()
+    app2 = create_app
+
+    assert not app1 == app2
+
+
 async def test_that_supported_metrics_are_being_computed_and_exposed_when_using_s3_repo(aiohttp_client,
                                                                                         sample_json_s3_url, loop):
     app = await create_app()
