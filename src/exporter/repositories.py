@@ -73,7 +73,7 @@ class S3Repository:
 class ResultFileStorage:
 
     def save(self, output_config: Rfc1808Url, content):
-        with open(output_config.path, 'wb') as resultfile:
+        with open(output_config.path, 'w') as resultfile:
             resultfile.write(content)
 
     def open(self, url: Rfc1808Url):

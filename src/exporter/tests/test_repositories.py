@@ -35,7 +35,7 @@ def sample_json_file_url():
     url = Rfc1808Url.from_url(f'file://{file_path}')
     content = {"SomeSampleJsonKey": "SomeSampleJsonValue"}
 
-    ResultFileStorage().save(url, json.dumps(content).encode())
+    ResultFileStorage().save(url, json.dumps(content))
 
     return url, content
 
@@ -137,7 +137,7 @@ def test_file_repository_save_object_when_called():
     content = {'SomeKey': 'SomeValue'}
     repo = ResultFileStorage()
 
-    repo.save(url, json.dumps(content).encode())
+    repo.save(url, json.dumps(content))
     saved_file = repo.open(url)
 
     assert saved_file == content
