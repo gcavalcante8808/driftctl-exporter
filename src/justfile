@@ -6,7 +6,9 @@ coverage:
         --cov-report xml:coverage.xml \
         --cov-report html \
         --cov=.
-  just flake8
 
 flake8:
     flake8 .
+
+bandit:
+    bandit -r -c .bandit.yml .
