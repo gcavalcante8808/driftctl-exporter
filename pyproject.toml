@@ -18,6 +18,7 @@ pytest = "7.0.1"
 pytest-cov = "3.0.0"
 pytest-aiohttp = "1.0.4"
 flake8 = "^4.0.1"
+bandit = {extras = ["toml"], version = "^1.7.4"}
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
