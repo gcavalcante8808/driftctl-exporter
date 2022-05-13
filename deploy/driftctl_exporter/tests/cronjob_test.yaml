@@ -1,0 +1,36 @@
+suite: test that our cronjobs is correctly configured
+templates:
+  - cronjob.yaml
+  - configmap.yaml
+  - driftignore.yaml
+  - secret.yaml
+
+arrange: &default-release
+  release:
+    name: test-release
+    namespace: SOME-NAMESPACE
+  set:
+    podAnnotations:
+      some-pod: annotations
+    image:
+      tag: its-the-image-tag-value
+
+tests:
+  - it: should have the correct serviceAccount value when there is name set for it
+    template: cronjob.yaml
+    <<: *default-release
+    asserts:
+      - equal:
+          path: spec.jobTemplate.spec.template.spec.serviceAccountName
+          value: test-release
+
+  - it: should have the correct serviceAccount value when serviceAccount.name is set
+    template: cronjob.yaml
+    <<: *default-release
+    set:
+      serviceAccount:
+        name: CustomServiceAccountName
+    asserts:
+      - equal:
+          path: spec.jobTemplate.spec.template.spec.serviceAccountName
+          value: CustomServiceAccountName

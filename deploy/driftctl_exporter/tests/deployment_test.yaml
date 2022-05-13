@@ -66,3 +66,22 @@ tests:
                 name: some-release
             - secretRef:
                 name: some-release
+
+  - it: should have the correct serviceAccount value when there is name set for it
+    template: deployment.yaml
+    <<: *default-release
+    asserts:
+      - equal:
+          path: spec.template.spec.serviceAccountName
+          value: some-release
+
+  - it: should have the correct serviceAccount value when serviceAccount.name is set
+    template: deployment.yaml
+    <<: *default-release
+    set:
+      serviceAccount:
+        name: CustomServiceAccountName
+    asserts:
+      - equal:
+          path: spec.template.spec.serviceAccountName
+          value: CustomServiceAccountName
