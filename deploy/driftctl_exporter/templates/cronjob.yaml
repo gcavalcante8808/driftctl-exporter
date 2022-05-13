@@ -23,6 +23,7 @@ spec:
             checksum/secrets: {{ include (print $.Template.BasePath "/secret.yaml") . | sha256sum }}
             checksum/driftignore: {{ include (print $.Template.BasePath "/driftignore.yaml") . | sha256sum }}
         spec:
+          serviceAccountName: {{ .Values.serviceAccount.name | default .Release.Name }}
           containers:
             - name: {{ .Release.Name }}-initial-scan
               image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"

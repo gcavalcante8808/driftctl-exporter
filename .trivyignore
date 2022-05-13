@@ -1,3 +1,8 @@
+# libssl vulnerabilities. Accept the risk
+
+# Its hasn't critical severity for the debian team: https://security-tracker.debian.org/tracker/CVE-2022-1292. Looks like python doesn't use it at all, so we going to ignore.
+CVE-2022-1292
+
 # Glibc/libc6 vulnerabilities. Accept the risk
 CVE-2021-33574
 CVE-2022-23218
