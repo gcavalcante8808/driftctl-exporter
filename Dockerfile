@@ -1,5 +1,5 @@
 FROM busybox as downloader
-RUN wget https://github.com/snyk/driftctl/releases/download/v0.20.0/driftctl_linux_amd64
+RUN wget https://github.com/snyk/driftctl/releases/download/v0.39.0/driftctl_linux_amd64
 RUN wget https://github.com/casey/just/releases/download/1.0.0/just-1.0.0-x86_64-unknown-linux-musl.tar.gz && \
     tar -xf just-1.0.0-x86_64-unknown-linux-musl.tar.gz
 RUN chmod +x driftctl_linux_amd64
